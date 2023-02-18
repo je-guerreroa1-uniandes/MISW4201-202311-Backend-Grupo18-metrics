@@ -31,12 +31,18 @@ class Persona(db.Model):
     entrenamientos = db.relationship('Entrenamiento', cascade='all, delete, delete-orphan')
     usuario = db.Column(db.Integer, db.ForeignKey('usuario.id'))
 
+class Entrenador(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(128))
+    apellido = db.Column(db.String(128))
+    usuario = db.Column(db.Integer, db.ForeignKey('usuario.id'))
 
 class Usuario(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     usuario = db.Column(db.String(50))
     contrasena = db.Column(db.String(50))
     personas = db.relationship('Persona', cascade='all, delete, delete-orphan')
+    entrenadores = db.relationship('Entrenador', cascade='all, delete, delete-orphan')
 
 
 class Entrenamiento(db.Model):
@@ -74,6 +80,17 @@ class PersonaSchema(SQLAlchemyAutoSchema):
     cintura = fields.String()
     pierna = fields.String()
 
+class EntrenadorSchema(SQLAlchemyAutoSchema):
+    class Meta:
+        model = Entrenador
+        include_relationships = True
+        include_fk = True
+        load_instance = True
+
+    id = fields.String()
+    nombre = fields.String()
+    apellido = fields.String()
+    usuario = fields.String()
 
 class UsuarioSchema(SQLAlchemyAutoSchema):
     class Meta:
