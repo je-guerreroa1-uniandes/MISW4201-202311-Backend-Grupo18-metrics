@@ -7,9 +7,11 @@ from modelos import db
 from vistas import \
     VistaSignIn, VistaLogIn, \
     VistaPersona, VistaPersonas, \
-	VistaEjercicio, VistaEjercicios, \
-	VistaEntrenamiento, VistaEntrenamientos, \
+    VistaEjercicio, VistaEjercicios, \
+    VistaEntrenamiento, VistaEntrenamientos, \
     VistaReporte
+from vistas.vista_entrenador import VistaEntrenador
+from vistas.vista_entrenadores import VistaEntrenadores
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///dbapp.sqlite'
@@ -28,6 +30,8 @@ cors = CORS(app)
 api = Api(app)
 api.add_resource(VistaSignIn, '/signin')
 api.add_resource(VistaLogIn, '/login')
+api.add_resource(VistaEntrenadores, '/entrenadores')
+api.add_resource(VistaEntrenador, '/entrenador')
 api.add_resource(VistaPersonas, '/personas/<int:id_usuario>')
 api.add_resource(VistaPersona, '/persona/<int:id_persona>')
 api.add_resource(VistaEjercicios, '/ejercicios')
