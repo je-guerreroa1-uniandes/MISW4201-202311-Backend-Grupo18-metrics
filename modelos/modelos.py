@@ -113,11 +113,12 @@ class ReporteGeneralSchema(Schema):
     imc = fields.Float()
     clasificacion_imc = fields.String()
 
+
 class ReporteDetalladoSchema(Schema):
     fecha = fields.String()
     repeticiones = fields.Float()
     calorias = fields.Float()
-    
+
 
 class EntrenamientoSchema(SQLAlchemyAutoSchema):
     class Meta:
