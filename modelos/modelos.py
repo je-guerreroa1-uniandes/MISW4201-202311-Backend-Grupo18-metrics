@@ -1,8 +1,10 @@
 from flask_sqlalchemy import SQLAlchemy
 from marshmallow import fields, Schema
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
+from enum import Enum
 
 db = SQLAlchemy()
+
 
 class Ejercicio(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -28,21 +30,34 @@ class Persona(db.Model):
     entrenando = db.Column(db.Boolean, default=True)
     razon = db.Column(db.String(512))
     terminado = db.Column(db.Date)
-    entrenamientos = db.relationship('Entrenamiento', cascade='all, delete, delete-orphan')
-    usuario = db.Column(db.Integer, db.ForeignKey('usuario.id'))
+    entrenamientos = db.relationship(
+        'Entrenamiento', cascade='all, delete, delete-orphan')
+    usuario_id = db.Column(
+        db.Integer, db.ForeignKey('usuario.id'), unique=True)
+    entrenador_id = db.Column(db.Integer, db.ForeignKey('entrenador.id'))
+
 
 class Entrenador(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(128))
     apellido = db.Column(db.String(128))
-    usuario = db.Column(db.Integer, db.ForeignKey('usuario.id'))
+    personas = db.relationship('Persona')
+    usuario_id = db.Column(
+        db.Integer, db.ForeignKey('usuario.id'), unique=True)
+    usuario = db.relationship('Usuario')
+
+
+class Rol(Enum):
+    ADMINISTRADOR = 1
+    ENTRENADOR = 2
+    PERSONA = 3
+
 
 class Usuario(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     usuario = db.Column(db.String(50))
     contrasena = db.Column(db.String(50))
-    personas = db.relationship('Persona', cascade='all, delete, delete-orphan')
-    entrenadores = db.relationship('Entrenador', cascade='all, delete, delete-orphan')
+    rol = db.Column(db.Enum(Rol))
 
 
 class Entrenamiento(db.Model):
