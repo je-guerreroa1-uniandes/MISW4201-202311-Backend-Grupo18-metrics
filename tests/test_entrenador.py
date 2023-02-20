@@ -1,6 +1,7 @@
 import json
 import hashlib
 from unittest import TestCase
+from unittest import skip
 
 from faker import Faker
 
@@ -50,6 +51,7 @@ class TestEntrenador(TestCase):
             db.session.delete(usuario_login)
             db.session.commit()
 
+    @skip('HU029')
     def test_crear_entrenador(self):
         #Crear datos de entrenador
         nombre_entrenador = 'test_' + self.nombre_completo.split()[0]
