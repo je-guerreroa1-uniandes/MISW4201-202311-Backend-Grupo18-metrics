@@ -82,6 +82,12 @@ class VistaPersonas(Resource):
     def post(self, id_usuario):
         entrenador = Entrenador.query.filter_by(
             usuario_id=id_usuario).first_or_404()
+        contrasena_encriptada = hashlib.md5(
+            request.json["contrasena"].encode('utf-8')).hexdigest()
+        nuevo_usuario = Usuario(
+            usuario=request.json["usuario"], contrasena=contrasena_encriptada, rol=Rol.PERSONA)
+        db.session.add(nuevo_usuario)
+        db.session.commit()
         nueva_persona = Persona(
             nombre=request.json["nombre"],
             apellido=request.json["apellido"],
@@ -96,7 +102,8 @@ class VistaPersonas(Resource):
             entrenando=bool(request.json["entrenando"]),
             razon=request.json["razon"],
             terminado=datetime.strptime(request.json["terminado"], '%Y-%m-%d'),
-            entrenador_id=entrenador.id
+            entrenador_id=entrenador.id,
+            usuario_id=nuevo_usuario.id
         )
         entrenador.personas.append(nueva_persona)
         db.session.commit()
