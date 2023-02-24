@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, abort
 from flask_jwt_extended import jwt_required, create_access_token
 from flask_restful import Resource
 from sqlalchemy.exc import IntegrityError
@@ -80,6 +80,11 @@ class VistaPersonas(Resource):
 
     @jwt_required()
     def post(self, id_usuario):
+        usuario = Usuario.query.filter(
+            Usuario.usuario == request.json["usuario"]).first()
+        if usuario is not None:
+            abort(500, description="usuario ya existe")
+
         entrenador = Entrenador.query.filter_by(
             usuario_id=id_usuario).first_or_404()
         contrasena_encriptada = hashlib.md5(
