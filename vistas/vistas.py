@@ -68,7 +68,7 @@ class VistaLogIn(Resource):
             return "El usuario no existe", 404
         else:
             token_de_acceso = create_access_token(identity=usuario.id)
-            return {"mensaje": "Inicio de sesión exitoso", "token": token_de_acceso, "id": usuario.id}
+            return {"mensaje": "Inicio de sesión exitoso", "token": token_de_acceso, "id": usuario.id, "rol": usuario.rol.name}
 
 
 class VistaPersonas(Resource):
