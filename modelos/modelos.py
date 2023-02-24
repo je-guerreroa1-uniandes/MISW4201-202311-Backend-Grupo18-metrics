@@ -55,7 +55,7 @@ class Rol(Enum):
 
 class Usuario(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    usuario = db.Column(db.String(50))
+    usuario = db.Column(db.String(50), unique=True)
     contrasena = db.Column(db.String(50))
     rol = db.Column(db.Enum(Rol))
 
