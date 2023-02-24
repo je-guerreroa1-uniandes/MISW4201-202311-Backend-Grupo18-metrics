@@ -74,9 +74,19 @@ class VistaLogIn(Resource):
 class VistaPersonas(Resource):
     @jwt_required()
     def get(self, id_usuario):
-        entrenador = Entrenador.query.filter_by(
-            usuario_id=id_usuario).first_or_404()
-        return [persona_schema.dump(persona) for persona in entrenador.personas]
+        usuario = Usuario.query.get_or_404(id_usuario)
+        personas = []
+
+        if usuario.rol == Rol.ADMINISTRADOR:
+            personas = Persona.query.all()
+        elif usuario.rol == Rol.ENTRENADOR:
+            entrenador = Entrenador.query.filter_by(
+                usuario_id=id_usuario).first_or_404()
+            personas = entrenador.personas
+        else:
+            abort(500, description='Rol de usuario no definido')
+
+        return [persona_schema.dump(persona) for persona in personas]
 
     @jwt_required()
     def post(self, id_usuario):
