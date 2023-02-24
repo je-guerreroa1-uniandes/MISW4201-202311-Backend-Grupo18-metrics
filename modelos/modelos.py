@@ -12,8 +12,7 @@ class Ejercicio(db.Model):
     descripcion = db.Column(db.String(512))
     video = db.Column(db.String(512))
     calorias = db.Column(db.Float)
-    entrenamientos = db.relationship('Entrenamiento')
-
+    entrenamientos = db.relationship('Entrenamiento')    
 
 class Persona(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -67,6 +66,18 @@ class Entrenamiento(db.Model):
     fecha = db.Column(db.Date)
     ejercicio = db.Column(db.Integer, db.ForeignKey('ejercicio.id'))
     persona = db.Column(db.Integer, db.ForeignKey('persona.id'))
+
+rutina_ejercicio = db.Table('rutina_ejercicio',
+    db.Column('rutina_id', db.Integer, db.ForeignKey('rutina.id')),
+    db.Column('ejercicio_id', db.Integer, db.ForeignKey('ejercicio.id'))
+)
+
+
+class Rutina(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(50))
+    descripcion = db.Column(db.String(300))
+    ejercicios = db.relationship('Ejercicio', secondary='rutina_ejercicio', backref="ejercicio")
 
 
 class EjercicioSchema(SQLAlchemyAutoSchema):
@@ -126,3 +137,13 @@ class EntrenamientoSchema(SQLAlchemyAutoSchema):
         include_relationships = True
         include_fk = True
         load_instance = True
+
+class RutinaSchema(SQLAlchemyAutoSchema):
+    class Meta:
+        model = Rutina
+        include_relationships = True
+        include_fk = True
+        load_instance = True
+
+    nombre = fields.String()
+    descripcion = fields.String()
