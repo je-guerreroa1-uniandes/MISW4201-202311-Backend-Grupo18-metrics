@@ -128,12 +128,12 @@ class VistaPersonas(Resource):
 class VistaPersona(Resource):
     @jwt_required()
     def get(self, id_persona):
-        return persona_schema.dump(Persona.query.get_or_404(id_persona))
+        persona = Persona.query.get_or_404(id_persona)
+        return persona_schema.dump(persona)
 
     @jwt_required()
     def put(self, id_persona):
         persona = Persona.query.get_or_404(id_persona)
-        usuario = Usuario.query.get_or_404(persona.usuario_id)
         persona.nombre = request.json["nombre"]
         persona.apellido = request.json["apellido"]
         persona.talla = float(request.json["talla"])
@@ -149,10 +149,11 @@ class VistaPersona(Resource):
         persona.razon = request.json["razon"]
         persona.terminado = datetime.strptime(
             request.json["terminado"], '%Y-%m-%d')
-        usuario.usuario = request.json["usuario"]
-        contrasena_encriptada = hashlib.md5(
+        persona.usuario.usuario = request.json["usuario"]
+        if request.json["contrasena"]:
+            contrasena_encriptada = hashlib.md5(
             request.json["contrasena"].encode('utf-8')).hexdigest()
-        usuario.contrasena = contrasena_encriptada
+            persona.usuario.contrasena = contrasena_encriptada
         db.session.commit()
         return persona_schema.dump(persona)
 
