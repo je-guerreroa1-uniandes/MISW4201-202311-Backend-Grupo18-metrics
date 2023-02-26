@@ -4,7 +4,7 @@ from unittest import TestCase
 
 from faker import Faker
 from faker.generator import random
-from modelos import db, Usuario, Ejercicio
+from modelos import db, Usuario, Ejercicio, Rol
 
 from app import app
 
@@ -20,7 +20,7 @@ class TestEjercicio(TestCase):
         contrasena_encriptada = hashlib.md5(contrasena.encode('utf-8')).hexdigest()
         
         # Se crea el usuario para identificarse en la aplicación
-        usuario_nuevo = Usuario(usuario=nombre_usuario, contrasena=contrasena_encriptada)
+        usuario_nuevo = Usuario(usuario=nombre_usuario, contrasena=contrasena_encriptada, rol=Rol.ENTRENADOR)
         db.session.add(usuario_nuevo)
         db.session.commit()
 

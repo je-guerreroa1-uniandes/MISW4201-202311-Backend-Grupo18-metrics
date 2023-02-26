@@ -34,6 +34,7 @@ class Persona(db.Model):
     usuario_id = db.Column(
         db.Integer, db.ForeignKey('usuario.id'), unique=True)
     entrenador_id = db.Column(db.Integer, db.ForeignKey('entrenador.id'))
+    usuario = db.relationship('Usuario')
 
 
 class Entrenador(db.Model):
@@ -54,7 +55,7 @@ class Rol(Enum):
 
 class Usuario(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    usuario = db.Column(db.String(50))
+    usuario = db.Column(db.String(50), unique=True)
     contrasena = db.Column(db.String(50))
     rol = db.Column(db.Enum(Rol))
 
@@ -90,7 +91,11 @@ class EjercicioSchema(SQLAlchemyAutoSchema):
     id = fields.String()
     calorias = fields.String()
 
-
+class UsuarioToDictionary(fields.Field):
+    def _serialize(self, value, attr, obj, **kwargs):
+        if value is None:
+            return None
+        return value.usuario
 class PersonaSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = Persona
@@ -99,6 +104,7 @@ class PersonaSchema(SQLAlchemyAutoSchema):
         load_instance = True
 
     entrenamientos = fields.List(fields.Nested(lambda: EntrenamientoSchema()))
+    usuario = UsuarioToDictionary(attribute=("usuario"))
 
 
 class EntrenadorSchema(SQLAlchemyAutoSchema):

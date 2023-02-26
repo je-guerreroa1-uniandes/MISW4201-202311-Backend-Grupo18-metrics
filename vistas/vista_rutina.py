@@ -11,8 +11,28 @@ class VistaRutina(Resource):
     def get(self, id_rutina):
         return rutina_schema.dump(Rutina.query.get_or_404(id_rutina))
 
-
 class VistaRutinas(Resource):
+    @jwt_required()
+    def put(self):
+        editRutina = Rutina.query.get_or_404(request.json["id"])      
+
+        ejerciciosRq = request.json["ejercicios"] 
+        editEjercicios = [];  
+        
+        for ejercicio in ejerciciosRq:
+            element =  Ejercicio.query.get_or_404(ejercicio['id'])
+            editEjercicios.append(element)
+
+        print(editEjercicios)
+
+        editRutina.nombre = request.json["nombre"]
+        editRutina.descripcion = request.json["descripcion"]
+        editRutina.ejercicios = editEjercicios
+
+        db.session.add(editRutina)
+        db.session.commit()
+        return rutina_schema.dump(editRutina)
+
     @jwt_required()
     def post(self):
         nuevaRutina = Rutina( \

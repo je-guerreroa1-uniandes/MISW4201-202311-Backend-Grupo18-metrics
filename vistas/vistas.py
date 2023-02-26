@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, abort
 from flask_jwt_extended import jwt_required, create_access_token
 from flask_restful import Resource
 from sqlalchemy.exc import IntegrityError
@@ -68,18 +68,33 @@ class VistaLogIn(Resource):
             return "El usuario no existe", 404
         else:
             token_de_acceso = create_access_token(identity=usuario.id)
-            return {"mensaje": "Inicio de sesión exitoso", "token": token_de_acceso, "id": usuario.id}
+            return {"mensaje": "Inicio de sesión exitoso", "token": token_de_acceso, "id": usuario.id, "rol": usuario.rol.name}
 
 
 class VistaPersonas(Resource):
     @jwt_required()
     def get(self, id_usuario):
-        entrenador = Entrenador.query.filter_by(
-            usuario_id=id_usuario).first_or_404()
-        return [persona_schema.dump(persona) for persona in entrenador.personas]
+        usuario = Usuario.query.get_or_404(id_usuario)
+        personas = []
+
+        if usuario.rol == Rol.ADMINISTRADOR:
+            personas = Persona.query.all()
+        elif usuario.rol == Rol.ENTRENADOR:
+            entrenador = Entrenador.query.filter_by(
+                usuario_id=id_usuario).first_or_404()
+            personas = entrenador.personas
+        else:
+            abort(500, description='Rol de usuario no definido')
+
+        return [persona_schema.dump(persona) for persona in personas]
 
     @jwt_required()
     def post(self, id_usuario):
+        usuario = Usuario.query.filter(
+            Usuario.usuario == request.json["usuario"]).first()
+        if usuario is not None:
+            abort(500, description="usuario ya existe")
+
         entrenador = Entrenador.query.filter_by(
             usuario_id=id_usuario).first_or_404()
         contrasena_encriptada = hashlib.md5(
@@ -113,12 +128,12 @@ class VistaPersonas(Resource):
 class VistaPersona(Resource):
     @jwt_required()
     def get(self, id_persona):
-        return persona_schema.dump(Persona.query.get_or_404(id_persona))
+        persona = Persona.query.get_or_404(id_persona)
+        return persona_schema.dump(persona)
 
     @jwt_required()
     def put(self, id_persona):
         persona = Persona.query.get_or_404(id_persona)
-        usuario = Usuario.query.get_or_404(persona.usuario_id)
         persona.nombre = request.json["nombre"]
         persona.apellido = request.json["apellido"]
         persona.talla = float(request.json["talla"])
@@ -134,10 +149,11 @@ class VistaPersona(Resource):
         persona.razon = request.json["razon"]
         persona.terminado = datetime.strptime(
             request.json["terminado"], '%Y-%m-%d')
-        usuario.usuario = request.json["usuario"]
-        contrasena_encriptada = hashlib.md5(
+        persona.usuario.usuario = request.json["usuario"]
+        if request.json["contrasena"]:
+            contrasena_encriptada = hashlib.md5(
             request.json["contrasena"].encode('utf-8')).hexdigest()
-        usuario.contrasena = contrasena_encriptada
+            persona.usuario.contrasena = contrasena_encriptada
         db.session.commit()
         return persona_schema.dump(persona)
 
