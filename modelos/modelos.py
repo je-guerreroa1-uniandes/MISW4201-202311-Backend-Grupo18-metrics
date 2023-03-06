@@ -29,8 +29,8 @@ class Persona(db.Model):
     entrenando = db.Column(db.Boolean, default=True)
     razon = db.Column(db.String(512))
     terminado = db.Column(db.Date)
-    entrenamientos = db.relationship(
-        'Entrenamiento', cascade='all, delete, delete-orphan')
+    entrenamientos = db.relationship('Entrenamiento', cascade='all, delete, delete-orphan')    
+    entrenamientos_rutina = db.relationship('EntrenamientoRutina', cascade='all, delete, delete-orphan')
     usuario_id = db.Column(
         db.Integer, db.ForeignKey('usuario.id'), unique=True)
     entrenador_id = db.Column(db.Integer, db.ForeignKey('entrenador.id'))
@@ -68,18 +68,26 @@ class Entrenamiento(db.Model):
     ejercicio = db.Column(db.Integer, db.ForeignKey('ejercicio.id'))
     persona = db.Column(db.Integer, db.ForeignKey('persona.id'))
 
+class EntrenamientoRutina(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tiempo = db.Column(db.Time)
+    repeticiones = db.Column(db.Integer)
+    fecha = db.Column(db.Date)
+    rutina = db.Column(db.Integer, db.ForeignKey('rutina.id'))
+    persona = db.Column(db.Integer, db.ForeignKey('persona.id'))
+
+
 rutina_ejercicio = db.Table('rutina_ejercicio',
     db.Column('rutina_id', db.Integer, db.ForeignKey('rutina.id')),
     db.Column('ejercicio_id', db.Integer, db.ForeignKey('ejercicio.id'))
 )
-
 
 class Rutina(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(50))
     descripcion = db.Column(db.String(300))
     ejercicios = db.relationship('Ejercicio', secondary='rutina_ejercicio', backref="ejercicio")
-
+    entrenamientos = db.relationship('EntrenamientoRutina') 
 
 class EjercicioSchema(SQLAlchemyAutoSchema):
     class Meta:
@@ -138,6 +146,13 @@ class ReporteDetalladoSchema(Schema):
 
 
 class EntrenamientoSchema(SQLAlchemyAutoSchema):
+    class Meta:
+        model = Entrenamiento
+        include_relationships = True
+        include_fk = True
+        load_instance = True
+
+class EntrenamientoRutinaSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = Entrenamiento
         include_relationships = True

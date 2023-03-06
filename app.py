@@ -8,10 +8,10 @@ from vistas import \
     VistaSignIn, VistaLogIn, \
     VistaPersona, VistaPersonas, \
     VistaEjercicio, VistaEjercicios, \
-    VistaEntrenamiento, VistaEntrenamientos, \
     VistaReporte
 from vistas.vista_entrenador import VistaEntrenador
 from vistas.vista_entrenadores import VistaEntrenadores
+from vistas.vista_entrenamientos import VistaEntrenamientoConRutina, VistaEntrenamientos, VistaEntrenamiento, VistaRutinaEntrenamiento
 from vistas.vista_rutina import VistaRutina, VistaRutinas
 
 app = Flask(__name__)
@@ -37,8 +37,15 @@ api.add_resource(VistaPersonas, '/personas/<int:id_usuario>')
 api.add_resource(VistaPersona, '/persona/<int:id_persona>')
 api.add_resource(VistaEjercicios, '/ejercicios')
 api.add_resource(VistaEjercicio, '/ejercicio/<int:id_ejercicio>')
+
+#Entrenamiento con ejercicio
 api.add_resource(VistaEntrenamientos, '/entrenamientos/<int:id_persona>')
 api.add_resource(VistaEntrenamiento, '/entrenamiento/<int:id_entrenamiento>')
+
+#Entrenamiento con rutina
+api.add_resource(VistaRutinaEntrenamiento, '/rutinas/entrenar')
+api.add_resource(VistaEntrenamientoConRutina, '/entrenamientos/rutina/<int:id_persona>')
+
 api.add_resource(VistaReporte, '/persona/<int:id_persona>/reporte')
 
 api.add_resource(VistaRutina, '/rutina/<int:id_rutina>')
