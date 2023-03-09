@@ -17,8 +17,7 @@ class VistaEntrenador(Resource):
     def post(self):
         usuario = Usuario.query.filter(
             Usuario.usuario == request.json["usuario"]).first()
-        if usuario is not None:
-            abort(500, description="usuario ya existe")
+
         if usuario is not None:
             abort(500, description="Usuario ya existe")
 
