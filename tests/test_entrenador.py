@@ -51,17 +51,21 @@ class TestEntrenador(TestCase):
             db.session.delete(usuario_login)
             db.session.commit()
 
-    @skip('HU029')
     def test_crear_entrenador(self):
-        #Crear datos de entrenador
-        nombre_entrenador = 'test_' + self.nombre_completo.split()[0]
-        apellido_entrenador = 'test_' + self.nombre_completo.split()[1]
+        # Crear datos de entrenador
+        # Datos entrenador
+        nombre_entrenador = 'test_' + self.data_factory.name().split()[0]
+        apellido_entrenador = 'test_' + self.data_factory.name().split()[1]
+        # Datos de usuario
+        usuario = nombre_entrenador + apellido_entrenador
+        contrasena = 'T1$' + self.data_factory.word()
 
         # Crear el json con el ejercicio a crear
         nuevo_entrenador = {
             "nombre": nombre_entrenador,
             "apellido": apellido_entrenador,
-            "usuario_id": self.usuario_id
+            "usuario": usuario,
+            "contrasena": contrasena
         }
 
         # Definir endpoint, encabezados y hacer el llamado
@@ -77,9 +81,12 @@ class TestEntrenador(TestCase):
         entrenador = Entrenador.query.get(datos_respuesta['id'])
         self.entrenadores_creados.append(entrenador)
 
+        nuevo_usuario = Usuario.query.filter(
+            Usuario.usuario == usuario).first()
+
         # Verificar que el llamado fue exitoso y que el objeto recibido tiene los datos iguales a los creados
         self.assertEqual(resultado_nuevo_entrenador.status_code, 200)
         self.assertEqual(datos_respuesta['nombre'], entrenador.nombre)
         self.assertEqual(datos_respuesta['apellido'], entrenador.apellido)
-        self.assertEqual(datos_respuesta['usuario'], str(self.usuario_id))
+        self.assertEqual(datos_respuesta['usuario'], nuevo_usuario.id)
         self.assertIsNotNone(datos_respuesta['id'])
