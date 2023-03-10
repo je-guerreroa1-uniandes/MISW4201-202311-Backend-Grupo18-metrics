@@ -213,63 +213,6 @@ class VistaEjercicio(Resource):
             return 'El ejercicio tiene entrenamientos asociados', 409
 
 
-class VistaEntrenamientos(Resource):
-    @jwt_required()
-    def get(self, id_persona):
-        persona = Persona.query.get_or_404(id_persona)
-        entrenamiento_array = []
-
-        for entrenamiento in persona.entrenamientos:
-            ejercicio = Ejercicio.query.get_or_404(entrenamiento.ejercicio)
-            entrenamiento_schema_dump = entrenamiento_schema.dump(
-                entrenamiento)
-            entrenamiento_schema_dump['ejercicio'] = ejercicio_schema.dump(
-                ejercicio)
-            entrenamiento_array.append(entrenamiento_schema_dump)
-        return [entrenamiento for entrenamiento in entrenamiento_array]
-
-    @jwt_required()
-    def post(self, id_persona):
-        print(datetime.strptime(request.json["fecha"], '%Y-%m-%d'))
-        nuevo_entrenamiento = Entrenamiento(
-            tiempo=datetime.strptime(
-                request.json["tiempo"], '%H:%M:%S').time(),
-            repeticiones=float(request.json["repeticiones"]),
-            fecha=datetime.strptime(request.json["fecha"], '%Y-%m-%d').date(),
-            ejercicio=request.json["ejercicio"],
-            persona=id_persona
-        )
-        db.session.add(nuevo_entrenamiento)
-        db.session.commit()
-        return ejercicio_schema.dump(nuevo_entrenamiento)
-
-
-class VistaEntrenamiento(Resource):
-    @jwt_required()
-    def get(self, id_entrenamiento):
-        return entrenamiento_schema.dump(Entrenamiento.query.get_or_404(id_entrenamiento))
-
-    @jwt_required()
-    def put(self, id_entrenamiento):
-        entrenamiento = Entrenamiento.query.get_or_404(id_entrenamiento)
-        entrenamiento.tiempo = datetime.strptime(
-            request.json["tiempo"], '%H:%M:%S').time()
-        entrenamiento.repeticiones = float(request.json["repeticiones"])
-        entrenamiento.fecha = datetime.strptime(
-            request.json["fecha"], '%Y-%m-%d').date()
-        entrenamiento.ejercicio = request.json["ejercicio"]
-        entrenamiento.persona = request.json["persona"]
-        db.session.commit()
-        return entrenamiento_schema.dump(entrenamiento)
-
-    @jwt_required()
-    def delete(self, id_entrenamiento):
-        entrenamiento = Entrenamiento.query.get_or_404(id_entrenamiento)
-        db.session.delete(entrenamiento)
-        db.session.commit()
-        return '', 204
-
-
 class VistaReporte(Resource):
 
     @jwt_required()
