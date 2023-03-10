@@ -152,7 +152,7 @@ class VistaPersona(Resource):
         persona.usuario.usuario = request.json["usuario"]
         if request.json["contrasena"]:
             contrasena_encriptada = hashlib.md5(
-            request.json["contrasena"].encode('utf-8')).hexdigest()
+                request.json["contrasena"].encode('utf-8')).hexdigest()
             persona.usuario.contrasena = contrasena_encriptada
         db.session.commit()
         return persona_schema.dump(persona)
@@ -166,6 +166,13 @@ class VistaPersona(Resource):
             return '', 204
         else:
             return 'La persona tiene entrenamientos asociados', 409
+
+
+class VistaPersonaUsuario(Resource):
+    @jwt_required()
+    def get(self, id_usuario):
+        persona = Persona.query.filter_by(usuario_id=id_usuario).first_or_404()
+        return persona_schema.dump(persona)
 
 
 class VistaEjercicios(Resource):
