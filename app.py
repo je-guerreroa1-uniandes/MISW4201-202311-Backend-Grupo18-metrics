@@ -44,7 +44,7 @@ api.add_resource(VistaEntrenamiento, '/entrenamiento/<int:id_entrenamiento>')
 
 #Entrenamiento con rutina
 api.add_resource(VistaRutinaEntrenamiento, '/rutinas/entrenar')
-api.add_resource(VistaEntrenamientoConRutina, '/entrenamientos/rutina/<int:id_persona>')
+api.add_resource(VistaEntrenamientoConRutina, '/entrenamientos/rutina/<int:id>')
 
 api.add_resource(VistaReporte, '/persona/<int:id_persona>/reporte')
 
