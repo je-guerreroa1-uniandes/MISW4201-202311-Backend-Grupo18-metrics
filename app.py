@@ -9,7 +9,7 @@ from vistas import \
     VistaPersona, VistaPersonas, \
     VistaEjercicio, VistaEjercicios, \
     VistaEntrenamiento, VistaEntrenamientos, \
-    VistaReporte, VistaPersonaUsuario
+    VistaReporte
 from vistas.vista_entrenador import VistaEntrenador
 from vistas.vista_entrenadores import VistaEntrenadores
 from vistas.vista_rutina import VistaRutina, VistaRutinas
@@ -34,7 +34,6 @@ api.add_resource(VistaLogIn, '/login')
 api.add_resource(VistaEntrenadores, '/entrenadores')
 api.add_resource(VistaEntrenador, '/entrenador')
 api.add_resource(VistaPersonas, '/personas/<int:id_usuario>')
-api.add_resource(VistaPersonaUsuario, '/persona/usuario/<int:id_usuario>')
 api.add_resource(VistaPersona, '/persona/<int:id_persona>')
 api.add_resource(VistaEjercicios, '/ejercicios')
 api.add_resource(VistaEjercicio, '/ejercicio/<int:id_ejercicio>')
