@@ -233,17 +233,22 @@ class VistaReporte(Resource):
         clasificacion_imc_calculado = utilidad.dar_clasificacion_imc(
             imc_calculado)
 
+        # Report header
         reporte_persona = dict(persona=data_persona, imc=imc_calculado,
                                clasificacion_imc=clasificacion_imc_calculado)
         reporte_persona_schema = reporte_general_schema.dump(reporte_persona)
 
+        # Código no usado
         for entrenamiento in data_persona.entrenamientos:
             data_entrenamiento = dict(
                 fecha=entrenamiento.fecha, repeticiones=entrenamiento.repeticiones, calorias=1)
             reporte_entrenamiento.append(
                 reporte_detallado_schema.dump(data_entrenamiento))
 
+        # Resultados entrenamientos
         reporte_persona_schema['resultados'] = utilidad.dar_resultados(
-            data_persona.entrenamientos)
+            data_persona.entrenamientos,
+            data_persona.entrenamientos_rutina
+        )
 
         return reporte_persona_schema
