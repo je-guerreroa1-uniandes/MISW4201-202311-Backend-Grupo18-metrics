@@ -68,6 +68,9 @@ class Entrenamiento(db.Model):
     ejercicio = db.Column(db.Integer, db.ForeignKey('ejercicio.id'))
     persona = db.Column(db.Integer, db.ForeignKey('persona.id'))
 
+    def tiempo_segundos(self):
+        return (self.tiempo.hour * 60 * 60) + (self.tiempo.minute * 60) + self.tiempo.second
+
 class EntrenamientoRutina(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     tiempo = db.Column(db.Time)
@@ -75,6 +78,9 @@ class EntrenamientoRutina(db.Model):
     fecha = db.Column(db.Date)
     rutina = db.Column(db.Integer, db.ForeignKey('rutina.id'))
     persona = db.Column(db.Integer, db.ForeignKey('persona.id'))
+
+    def tiempo_segundos(self):
+        return (self.tiempo.hour * 60 * 60) + (self.tiempo.minute * 60) + self.tiempo.second
 
 
 rutina_ejercicio = db.Table('rutina_ejercicio',

@@ -29,7 +29,8 @@ class VistaEntrenamientos(Resource):
     @jwt_required()
     def post(self, id_persona):
         type =  request.json["type"]
-            
+
+        # Entrenamiento ejercicio
         if type == '1' :
             print(datetime.strptime(request.json["fecha"], '%Y-%m-%d'))
             nuevo_entrenamiento = Entrenamiento(
@@ -44,6 +45,7 @@ class VistaEntrenamientos(Resource):
             db.session.commit()
             return entrenamiento_schema.dump(nuevo_entrenamiento)
         else :
+            # Entrenamiento rutina
             print("se fue por rutinas")
             nuevo_entrenamiento = EntrenamientoRutina(
                 tiempo=datetime.strptime(request.json["tiempo"], '%H:%M:%S').time(),

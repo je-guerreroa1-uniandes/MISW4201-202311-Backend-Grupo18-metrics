@@ -152,7 +152,7 @@ class VistaPersona(Resource):
         persona.usuario.usuario = request.json["usuario"]
         if request.json["contrasena"]:
             contrasena_encriptada = hashlib.md5(
-            request.json["contrasena"].encode('utf-8')).hexdigest()
+                request.json["contrasena"].encode('utf-8')).hexdigest()
             persona.usuario.contrasena = contrasena_encriptada
         db.session.commit()
         return persona_schema.dump(persona)
@@ -166,6 +166,13 @@ class VistaPersona(Resource):
             return '', 204
         else:
             return 'La persona tiene entrenamientos asociados', 409
+
+
+class VistaPersonaUsuario(Resource):
+    @jwt_required()
+    def get(self, id_usuario):
+        persona = Persona.query.filter_by(usuario_id=id_usuario).first_or_404()
+        return persona_schema.dump(persona)
 
 
 class VistaEjercicios(Resource):
@@ -226,17 +233,22 @@ class VistaReporte(Resource):
         clasificacion_imc_calculado = utilidad.dar_clasificacion_imc(
             imc_calculado)
 
+        # Report header
         reporte_persona = dict(persona=data_persona, imc=imc_calculado,
                                clasificacion_imc=clasificacion_imc_calculado)
         reporte_persona_schema = reporte_general_schema.dump(reporte_persona)
 
+        # Código no usado
         for entrenamiento in data_persona.entrenamientos:
             data_entrenamiento = dict(
                 fecha=entrenamiento.fecha, repeticiones=entrenamiento.repeticiones, calorias=1)
             reporte_entrenamiento.append(
                 reporte_detallado_schema.dump(data_entrenamiento))
 
+        # Resultados entrenamientos
         reporte_persona_schema['resultados'] = utilidad.dar_resultados(
-            data_persona.entrenamientos)
+            data_persona.entrenamientos,
+            data_persona.entrenamientos_rutina
+        )
 
         return reporte_persona_schema
