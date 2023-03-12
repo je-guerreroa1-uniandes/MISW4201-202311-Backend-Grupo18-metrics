@@ -160,7 +160,7 @@ class EntrenamientoSchema(SQLAlchemyAutoSchema):
 
 class EntrenamientoRutinaSchema(SQLAlchemyAutoSchema):
     class Meta:
-        model = Entrenamiento
+        model = EntrenamientoRutina
         include_relationships = True
         include_fk = True
         load_instance = True
