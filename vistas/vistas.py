@@ -152,7 +152,7 @@ class VistaPersona(Resource):
         persona.usuario.usuario = request.json["usuario"]
         if request.json["contrasena"]:
             contrasena_encriptada = hashlib.md5(
-            request.json["contrasena"].encode('utf-8')).hexdigest()
+                request.json["contrasena"].encode('utf-8')).hexdigest()
             persona.usuario.contrasena = contrasena_encriptada
         db.session.commit()
         return persona_schema.dump(persona)
@@ -166,6 +166,13 @@ class VistaPersona(Resource):
             return '', 204
         else:
             return 'La persona tiene entrenamientos asociados', 409
+
+
+class VistaPersonaUsuario(Resource):
+    @jwt_required()
+    def get(self, id_usuario):
+        persona = Persona.query.filter_by(usuario_id=id_usuario).first_or_404()
+        return persona_schema.dump(persona)
 
 
 class VistaEjercicios(Resource):
@@ -213,63 +220,6 @@ class VistaEjercicio(Resource):
             return 'El ejercicio tiene entrenamientos asociados', 409
 
 
-class VistaEntrenamientos(Resource):
-    @jwt_required()
-    def get(self, id_persona):
-        persona = Persona.query.get_or_404(id_persona)
-        entrenamiento_array = []
-
-        for entrenamiento in persona.entrenamientos:
-            ejercicio = Ejercicio.query.get_or_404(entrenamiento.ejercicio)
-            entrenamiento_schema_dump = entrenamiento_schema.dump(
-                entrenamiento)
-            entrenamiento_schema_dump['ejercicio'] = ejercicio_schema.dump(
-                ejercicio)
-            entrenamiento_array.append(entrenamiento_schema_dump)
-        return [entrenamiento for entrenamiento in entrenamiento_array]
-
-    @jwt_required()
-    def post(self, id_persona):
-        print(datetime.strptime(request.json["fecha"], '%Y-%m-%d'))
-        nuevo_entrenamiento = Entrenamiento(
-            tiempo=datetime.strptime(
-                request.json["tiempo"], '%H:%M:%S').time(),
-            repeticiones=float(request.json["repeticiones"]),
-            fecha=datetime.strptime(request.json["fecha"], '%Y-%m-%d').date(),
-            ejercicio=request.json["ejercicio"],
-            persona=id_persona
-        )
-        db.session.add(nuevo_entrenamiento)
-        db.session.commit()
-        return ejercicio_schema.dump(nuevo_entrenamiento)
-
-
-class VistaEntrenamiento(Resource):
-    @jwt_required()
-    def get(self, id_entrenamiento):
-        return entrenamiento_schema.dump(Entrenamiento.query.get_or_404(id_entrenamiento))
-
-    @jwt_required()
-    def put(self, id_entrenamiento):
-        entrenamiento = Entrenamiento.query.get_or_404(id_entrenamiento)
-        entrenamiento.tiempo = datetime.strptime(
-            request.json["tiempo"], '%H:%M:%S').time()
-        entrenamiento.repeticiones = float(request.json["repeticiones"])
-        entrenamiento.fecha = datetime.strptime(
-            request.json["fecha"], '%Y-%m-%d').date()
-        entrenamiento.ejercicio = request.json["ejercicio"]
-        entrenamiento.persona = request.json["persona"]
-        db.session.commit()
-        return entrenamiento_schema.dump(entrenamiento)
-
-    @jwt_required()
-    def delete(self, id_entrenamiento):
-        entrenamiento = Entrenamiento.query.get_or_404(id_entrenamiento)
-        db.session.delete(entrenamiento)
-        db.session.commit()
-        return '', 204
-
-
 class VistaReporte(Resource):
 
     @jwt_required()
@@ -283,17 +233,22 @@ class VistaReporte(Resource):
         clasificacion_imc_calculado = utilidad.dar_clasificacion_imc(
             imc_calculado)
 
+        # Report header
         reporte_persona = dict(persona=data_persona, imc=imc_calculado,
                                clasificacion_imc=clasificacion_imc_calculado)
         reporte_persona_schema = reporte_general_schema.dump(reporte_persona)
 
+        # Código no usado
         for entrenamiento in data_persona.entrenamientos:
             data_entrenamiento = dict(
                 fecha=entrenamiento.fecha, repeticiones=entrenamiento.repeticiones, calorias=1)
             reporte_entrenamiento.append(
                 reporte_detallado_schema.dump(data_entrenamiento))
 
+        # Resultados entrenamientos
         reporte_persona_schema['resultados'] = utilidad.dar_resultados(
-            data_persona.entrenamientos)
+            data_persona.entrenamientos,
+            data_persona.entrenamientos_rutina
+        )
 
         return reporte_persona_schema

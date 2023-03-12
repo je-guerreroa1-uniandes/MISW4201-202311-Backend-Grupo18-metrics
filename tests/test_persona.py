@@ -11,7 +11,10 @@ from app import app
 
 class TestPersona(TestCase):
 
-    def setUp (self):
+    def setUp(self):
+        self.personas_creadas = []
+        self.usuarios_creados = []
+        self.entrenadores_creados = []
         self.data_factory = Faker()
         self.client = app.test_client()
 
@@ -27,6 +30,7 @@ class TestPersona(TestCase):
             nombre='Entrenador', apellido=nombre_usuario, usuario=usuario_nuevo)
         db.session.add(nuevo_entrenador)
         db.session.commit()
+        self.entrenadores_creados.append(nuevo_entrenador)
 
         self.entrenador_id = nuevo_entrenador.id
 
@@ -44,21 +48,21 @@ class TestPersona(TestCase):
         self.token = respuesta_login["token"]
         self.usuario_id = respuesta_login["id"]
 
-        self.personas_creadas = []
-
     def tearDown(self):
             for persona_creada in self.personas_creadas:
                 persona = Persona.query.get(persona_creada.id)
                 db.session.delete(persona)
                 db.session.commit()
 
+            for usuario_creado in self.usuarios_creados:
+                usuario_persona = Usuario.query.get(usuario_creado.id)
+                db.session.delete(usuario_persona)
+                db.session.commit()
 
             usuario_login = Usuario.query.get(self.usuario_id)
             db.session.delete(usuario_login)
             usuario_entrenador = Entrenador.query.get(self.entrenador_id)
             db.session.delete(usuario_entrenador)
-            # usuario_persona = Usuario.query.get(self.usuario_persona_id)
-            # db.session.delete(usuario_persona)
             db.session.commit()
 
     def test_crear_persona(self):
@@ -113,6 +117,8 @@ class TestPersona(TestCase):
         persona = Persona.query.get(datos_respuesta['id'])
         self.personas_creadas.append(persona)
         self.usuario_persona_id = datos_respuesta['usuario_id']
+        usuario_persona = Usuario.query.get(self.usuario_persona_id)
+        self.usuarios_creados.append(usuario_persona)
 
         # Verificar que el llamado fue exitoso y que el objeto recibido tiene los datos iguales a los creados
         self.assertEqual(resultado_nueva_persona.status_code, 200)
@@ -170,6 +176,9 @@ class TestPersona(TestCase):
         datos_respuesta = json.loads(resultado_nueva_persona.get_data())
         persona = Persona.query.get(datos_respuesta['id'])
         self.personas_creadas.append(persona)
+        self.usuario_persona_id = datos_respuesta['usuario_id']
+        usuario_persona = Usuario.query.get(self.usuario_persona_id)
+        self.usuarios_creados.append(usuario_persona)
 
         # Definir endpoint, encabezados y hacer el llamado de actualización
         endpoint_persona = "/persona/" + str(persona.id)
@@ -241,6 +250,8 @@ class TestPersona(TestCase):
         persona = Persona.query.get(datos_respuesta['id'])
         self.personas_creadas.append(persona)
         self.usuario_persona_id = datos_respuesta['usuario_id']
+        usuario_persona = Usuario.query.get(self.usuario_persona_id)
+        self.usuarios_creados.append(usuario_persona)
 
         # Definir endpoint, encabezados y hacer el llamado de actualización
         endpoint_persona = "/persona/" + str(persona.id)
