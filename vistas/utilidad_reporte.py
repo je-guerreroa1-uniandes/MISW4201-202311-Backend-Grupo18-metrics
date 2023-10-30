@@ -7,6 +7,9 @@ from modelos import \
 
 
 class UtilidadReporte:
+    def print_something():
+        return "something"
+
     def calcular_imc(self, talla, peso):
         return peso / (talla*talla)
         
