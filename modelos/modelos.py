@@ -5,7 +5,6 @@ from enum import Enum
 
 db = SQLAlchemy()
 
-
 class Ejercicio(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(128))
