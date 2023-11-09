@@ -14,6 +14,7 @@ class TestEjercicio(TestCase):
     def setUp(self):
         self.data_factory = Faker()
         self.client = app.test_client()
+        self.header_content_type = 'application/json'
         
         nombre_usuario = 'test_' + self.data_factory.name()
         contrasena = 'T1$' + self.data_factory.word()
@@ -32,7 +33,7 @@ class TestEjercicio(TestCase):
 
         solicitud_login = self.client.post("/login",
                                                 data=json.dumps(usuario_login),
-                                                headers={'Content-Type': 'application/json'})
+                                                headers={'Content-Type': self.header_content_type})
 
         respuesta_login = json.loads(solicitud_login.get_data())
 
@@ -69,7 +70,7 @@ class TestEjercicio(TestCase):
         
         #Definir endpoint, encabezados y hacer el llamado
         endpoint_ejercicios = "/ejercicios"
-        headers = {'Content-Type': 'application/json', "Authorization": "Bearer {}".format(self.token)}
+        headers = {'Content-Type': self.header_content_type, "Authorization": "Bearer {}".format(self.token)}
         
         resultado_nuevo_ejercicio = self.client.post(endpoint_ejercicios,
                                                    data=json.dumps(nuevo_ejercicio),
@@ -122,7 +123,7 @@ class TestEjercicio(TestCase):
         
         #Definir endpoint, encabezados y hacer el llamado
         endpoint_ejercicios = "/ejercicio/" + str(ejercicio.id)
-        headers = {'Content-Type': 'application/json', "Authorization": "Bearer {}".format(self.token)}
+        headers = {'Content-Type': self.header_content_type, "Authorization": "Bearer {}".format(self.token)}
         
         resultado_edicion_ejercicio = self.client.put(endpoint_ejercicios,
                                                    data=json.dumps(ejercicio_editado),
@@ -162,7 +163,7 @@ class TestEjercicio(TestCase):
         
         #Definir endpoint, encabezados y hacer el llamado
         endpoint_ejercicios = "/ejercicio/" + str(ejercicio.id)
-        headers = {'Content-Type': 'application/json', "Authorization": "Bearer {}".format(self.token)}
+        headers = {'Content-Type': self.header_content_type, "Authorization": "Bearer {}".format(self.token)}
         resultado_borrado_ejercicio = self.client.delete(endpoint_ejercicios,
                                                    headers=headers)
                                                    
@@ -191,7 +192,7 @@ class TestEjercicio(TestCase):
         
         #Definir endpoint, encabezados y hacer el llamado
         endpoint_ejercicios = "/ejercicio/" + str(ejercicio.id)
-        headers = {'Content-Type': 'application/json', "Authorization": "Bearer {}".format(self.token)}
+        headers = {'Content-Type': self.header_content_type, "Authorization": "Bearer {}".format(self.token)}
         
         resultado_consulta_ejercicio = self.client.get(endpoint_ejercicios,
                                                    headers=headers)
@@ -227,7 +228,7 @@ class TestEjercicio(TestCase):
         
         #Definir endpoint, encabezados y hacer el llamado
         endpoint_ejercicios = "/ejercicios"
-        headers = {'Content-Type': 'application/json', "Authorization": "Bearer {}".format(self.token)}
+        headers = {'Content-Type': self.header_content_type, "Authorization": "Bearer {}".format(self.token)}
         
         resultado_consulta_ejercicio = self.client.get(endpoint_ejercicios,
                                                    headers=headers)
