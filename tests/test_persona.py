@@ -42,9 +42,7 @@ class TestPersona(TestCase):
             "contrasena": contrasena
         }
 
-        solicitud_login = self.client.post("/login",
-                                           data=json.dumps(usuario_login),
-                                           headers={'Content-Type': self.content_type})
+        solicitud_login = self.perform_usuario_login(usuario_login)
 
         respuesta_login = json.loads(solicitud_login.get_data())
 
@@ -53,6 +51,11 @@ class TestPersona(TestCase):
                         "Authorization": self.authentication_method.format(self.token)}
         self.usuario_id = respuesta_login["id"]
         self.endpoint_persona_with_id = self.endpoint_personas + str(self.usuario_id)
+
+    def perform_usuario_login(self, usuario_login):
+        return self.client.post("/login",
+                                data=json.dumps(usuario_login),
+                                headers={'Content-Type': self.content_type})
 
     def tearDown(self):
             for persona_creada in self.personas_creadas:
@@ -110,9 +113,7 @@ class TestPersona(TestCase):
         }
 
         # Definir endpoint, encabezados y hacer el llamado
-        resultado_nueva_persona = self.client.post(self.endpoint_persona_with_id,
-                                                     data=json.dumps(nueva_persona),
-                                                     headers=self.headers)
+        resultado_nueva_persona = self.perform_usuario_crear(nueva_persona)
 
         # Obtener los datos de respuesta y dejarlos un objeto json y en el objeto a comparar
         datos_respuesta = json.loads(resultado_nueva_persona.get_data())
@@ -168,9 +169,7 @@ class TestPersona(TestCase):
         }
 
         # Definir endpoint, encabezados y hacer el llamado
-        resultado_nueva_persona = self.client.post(self.endpoint_persona_with_id,
-                                                   data=json.dumps(nueva_persona),
-                                                   headers=self.headers)
+        resultado_nueva_persona = self.perform_usuario_crear(nueva_persona)
         datos_respuesta = json.loads(resultado_nueva_persona.get_data())
         persona = Persona.query.get(datos_respuesta['id'])
         self.personas_creadas.append(persona)
@@ -233,9 +232,7 @@ class TestPersona(TestCase):
         }
 
         # Definir endpoint, encabezados y hacer el llamado
-        resultado_nueva_persona = self.client.post(self.endpoint_persona_with_id,
-                                                   data=json.dumps(nueva_persona),
-                                                   headers=self.headers)
+        resultado_nueva_persona = self.perform_usuario_crear(nueva_persona)
 
         # Obtener los datos de respuesta y dejarlos un objeto json y en el objeto a comparar
         datos_respuesta = json.loads(resultado_nueva_persona.get_data())
@@ -252,9 +249,7 @@ class TestPersona(TestCase):
         persona_editada['apellido'] = persona_editada['apellido'] + "_editado"
         persona_editada['usuario'] = nueva_persona["usuario"] + "_editado"
         persona_editada['contrasena'] = nueva_persona["contrasena"]
-        resultado_persona_editada = self.client.put(endpoint_persona,
-                                                   data=json.dumps(persona_editada),
-                                                   headers=self.headers)
+        resultado_persona_editada = self.perform_put(endpoint_persona, persona_editada)
         datos_respuesta_editada = json.loads(resultado_persona_editada.get_data())
 
         # Verificar que el llamado fue exitoso y que el objeto recibido tiene los datos iguales a los creados
@@ -263,3 +258,13 @@ class TestPersona(TestCase):
         self.assertEqual(persona_editada['apellido'], datos_respuesta_editada['apellido'])
         self.assertEqual(persona_editada['usuario'], datos_respuesta_editada['usuario'])
         self.assertIsNotNone(datos_respuesta['id'])
+
+    def perform_usuario_crear(self, nueva_persona):
+        return self.client.post(self.endpoint_persona_with_id,
+                                data=json.dumps(nueva_persona),
+                                headers=self.headers)
+
+    def perform_put(self, endpoint_persona, persona_editada):
+        return self.client.put(endpoint_persona,
+                               data=json.dumps(persona_editada),
+                               headers=self.headers)
