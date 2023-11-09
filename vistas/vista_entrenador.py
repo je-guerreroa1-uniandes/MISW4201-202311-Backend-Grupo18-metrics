@@ -11,7 +11,7 @@ class VistaEntrenador(Resource):
     @jwt_required()
     def get(self, id_entrenador):
         entrenador = Entrenador.query.get_or_404(id_entrenador)
-        return [entrenador_schema.dump(entrenador) for usuario in entrenador.usuario]
+        return entrenador_schema.dump(entrenador.usuario)
 
     @jwt_required()
     def post(self):
@@ -33,8 +33,6 @@ class VistaEntrenador(Resource):
             apellido=request.json["apellido"], \
             usuario_id=nuevo_usuario.id \
             )
-        # usuario.entrenadores.append(nuevo_entrenador)
-        # db.session.add(usuario)
         db.session.add(nuevo_entrenador)
         db.session.commit()
         return entrenador_schema.dump(nuevo_entrenador)

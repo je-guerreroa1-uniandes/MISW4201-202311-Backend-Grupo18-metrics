@@ -38,7 +38,6 @@ class VistaSignIn(Resource):
                 nombre='Entrenador', apellido=request.json["usuario"], usuario=nuevo_usuario)
             db.session.add(nuevo_entrenador)
             db.session.commit()
-            # token_de_acceso = create_access_token(identity=nuevo_usuario.id)
             return {"mensaje": "usuario creado exitosamente", "id": nuevo_usuario.id}
         else:
             return "El usuario ya existe", 404
@@ -224,7 +223,6 @@ class VistaReporte(Resource):
 
     @jwt_required()
     def get(self, id_persona):
-        reporte = []
         reporte_entrenamiento = []
         utilidad = UtilidadReporte()
         data_persona = Persona.query.get_or_404(id_persona)
