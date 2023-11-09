@@ -52,6 +52,7 @@ class TestPersona(TestCase):
         self.headers = {'Content-Type': self.content_type,
                         "Authorization": self.authentication_method.format(self.token)}
         self.usuario_id = respuesta_login["id"]
+        self.endpoint_persona_with_id = self.endpoint_personas + str(self.usuario_id)
 
     def tearDown(self):
             for persona_creada in self.personas_creadas:
@@ -109,8 +110,7 @@ class TestPersona(TestCase):
         }
 
         # Definir endpoint, encabezados y hacer el llamado
-        endpoint_persona = self.endpoint_personas + str(self.usuario_id)
-        resultado_nueva_persona = self.client.post(endpoint_persona,
+        resultado_nueva_persona = self.client.post(self.endpoint_persona_with_id,
                                                      data=json.dumps(nueva_persona),
                                                      headers=self.headers)
 
@@ -168,8 +168,7 @@ class TestPersona(TestCase):
         }
 
         # Definir endpoint, encabezados y hacer el llamado
-        endpoint_persona = self.endpoint_personas + str(self.usuario_id)
-        resultado_nueva_persona = self.client.post(endpoint_persona,
+        resultado_nueva_persona = self.client.post(self.endpoint_persona_with_id,
                                                    data=json.dumps(nueva_persona),
                                                    headers=self.headers)
         datos_respuesta = json.loads(resultado_nueva_persona.get_data())
@@ -234,8 +233,7 @@ class TestPersona(TestCase):
         }
 
         # Definir endpoint, encabezados y hacer el llamado
-        endpoint_persona = self.endpoint_personas + str(self.usuario_id)
-        resultado_nueva_persona = self.client.post(endpoint_persona,
+        resultado_nueva_persona = self.client.post(self.endpoint_persona_with_id,
                                                    data=json.dumps(nueva_persona),
                                                    headers=self.headers)
 
