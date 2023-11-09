@@ -11,10 +11,6 @@ from app import app
 
 class TestPersona(TestCase):
 
-    def update_headers (self, token):
-        self.headers = {'Content-Type': self.content_type,
-                        "Authorization": self.authentication_method.format(token)}
-        return self.headers
     def setUp(self):
         self.personas_creadas = []
         self.usuarios_creados = []
@@ -53,7 +49,8 @@ class TestPersona(TestCase):
         respuesta_login = json.loads(solicitud_login.get_data())
 
         self.token = respuesta_login["token"]
-        self.update_headers(self.token)
+        self.headers = {'Content-Type': self.content_type,
+                        "Authorization": self.authentication_method.format(self.token)}
         self.usuario_id = respuesta_login["id"]
 
     def tearDown(self):
