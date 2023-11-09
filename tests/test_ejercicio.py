@@ -8,13 +8,13 @@ from modelos import db, Usuario, Ejercicio, Rol
 
 from app import app
 
-
 class TestEjercicio(TestCase):
 
     def setUp(self):
         self.data_factory = Faker()
         self.client = app.test_client()
         self.header_content_type = 'application/json'
+        self.authentication_method = "Bearer {}"
         
         nombre_usuario = 'test_' + self.data_factory.name()
         contrasena = 'T1$' + self.data_factory.word()
@@ -163,7 +163,7 @@ class TestEjercicio(TestCase):
         
         #Definir endpoint, encabezados y hacer el llamado
         endpoint_ejercicios = "/ejercicio/" + str(ejercicio.id)
-        headers = {'Content-Type': self.header_content_type, "Authorization": "Bearer {}".format(self.token)}
+        headers = {'Content-Type': self.header_content_type, "Authorization": self.authentication_method.format(self.token)}
         resultado_borrado_ejercicio = self.client.delete(endpoint_ejercicios,
                                                    headers=headers)
                                                    
