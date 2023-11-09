@@ -14,7 +14,7 @@ class TestEntrenador(TestCase):
     def setUp (self):
         self.data_factory = Faker()
         self.client = app.test_client()
-
+        self.content_type = 'application/json'
         self.nombre_completo = self.data_factory.name()
         nombre_usuario = 'test_' + self.data_factory.name()
         contrasena = 'T1$' + self.data_factory.word()
@@ -32,7 +32,7 @@ class TestEntrenador(TestCase):
 
         solicitud_login = self.client.post("/login",
                                            data=json.dumps(usuario_login),
-                                           headers={'Content-Type': 'application/json'})
+                                           headers={'Content-Type': self.content_type})
 
         respuesta_login = json.loads(solicitud_login.get_data())
 
@@ -70,7 +70,7 @@ class TestEntrenador(TestCase):
 
         # Definir endpoint, encabezados y hacer el llamado
         endpoint_entrenadores = "/entrenador"
-        headers = {'Content-Type': 'application/json', "Authorization": "Bearer {}".format(self.token)}
+        headers = {'Content-Type': self.content_type, "Authorization": "Bearer {}".format(self.token)}
 
         resultado_nuevo_entrenador = self.client.post(endpoint_entrenadores,
                                                      data=json.dumps(nuevo_entrenador),
@@ -106,7 +106,7 @@ def test_actualizar_entrenador(self):
     # Define the endpoint and headers for the update
     endpoint = f"/entrenador/{entrenador.id}"
     headers = {
-        'Content-Type': 'application/json',
+        'Content-Type': self.content_type,
         "Authorization": f"Bearer {self.token}"
     }
 

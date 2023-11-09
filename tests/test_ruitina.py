@@ -19,25 +19,27 @@ class TestRutinaViews(TestCase):
         self.existing_rutina = Rutina(nombre='Test Rutina', descripcion='Descripción de prueba')
         self.db.session.add(self.existing_rutina)
         self.db.session.commit()
+        self.existing_rutina_endpoint = f'/rutina/{self.existing_rutina.id}'
+        self.rutinas_endpoint = '/rutinas'
 
     def tearDown(self):
         self.db.session.remove()
         self.db.drop_all()
 
     def test_get_rutina(self):
-        response = self.client.get(f'/rutina/{self.existing_rutina.id}',
+        response = self.client.get(self.existing_rutina_endpoint,
                                    headers={'Authorization': f'Bearer {self.access_token}'})
         self.assertEqual(response.status_code, 200)
         # Additional assertions for response data can be added here
 
     def test_delete_rutina(self):
-        response = self.client.delete(f'/rutina/{self.existing_rutina.id}',
+        response = self.client.delete(self.existing_rutina_endpoint,
                                       headers={'Authorization': f'Bearer {self.access_token}'})
         self.assertEqual(response.status_code, 200)
         # Additional assertions to ensure deletion can be added here
 
     def test_get_rutinas(self):
-        response = self.client.get('/rutinas',
+        response = self.client.get(self.rutinas_endpoint,
                                    headers={'Authorization': f'Bearer {self.access_token}'})
         self.assertEqual(response.status_code, 200)
         # Additional assertions for response data can be added here
@@ -48,7 +50,7 @@ class TestRutinaViews(TestCase):
             "descripcion": "Descripción nueva",
             "ejercicios": []  # You would need to create some Ejercicio instances and add them here
         }
-        response = self.client.post('/rutinas',
+        response = self.client.post(self.rutinas_endpoint,
                                     json=data,
                                     headers={'Authorization': f'Bearer {self.access_token}'})
         self.assertEqual(response.status_code, 200)
@@ -65,10 +67,8 @@ class TestRutinaViews(TestCase):
             "descripcion": "Descripción modificada",
             "ejercicios": [{"id": ejercicio.id}]
         }
-        response = self.client.put('/rutinas',
+        response = self.client.put(self.rutinas_endpoint,
                                    json=data,
                                    headers={'Authorization': f'Bearer {self.access_token}'})
         self.assertEqual(response.status_code, 200)
         # Additional assertions for response data can be added here
-
-# Note: You would need to replace '/rutina/{id}' and '/rutinas' with the actual endpoints from your application.
