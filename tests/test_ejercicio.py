@@ -70,7 +70,7 @@ class TestEjercicio(TestCase):
         
         #Definir endpoint, encabezados y hacer el llamado
         endpoint_ejercicios = "/ejercicios"
-        headers = {'Content-Type': self.header_content_type, "Authorization": "Bearer {}".format(self.token)}
+        headers = {'Content-Type': self.header_content_type, "Authorization": self.authentication_method.format(self.token)}
         
         resultado_nuevo_ejercicio = self.client.post(endpoint_ejercicios,
                                                    data=json.dumps(nuevo_ejercicio),
@@ -123,7 +123,7 @@ class TestEjercicio(TestCase):
         
         #Definir endpoint, encabezados y hacer el llamado
         endpoint_ejercicios = "/ejercicio/" + str(ejercicio.id)
-        headers = {'Content-Type': self.header_content_type, "Authorization": "Bearer {}".format(self.token)}
+        headers = {'Content-Type': self.header_content_type, "Authorization": self.authentication_method.format(self.token)}
         
         resultado_edicion_ejercicio = self.client.put(endpoint_ejercicios,
                                                    data=json.dumps(ejercicio_editado),
@@ -192,7 +192,7 @@ class TestEjercicio(TestCase):
         
         #Definir endpoint, encabezados y hacer el llamado
         endpoint_ejercicios = "/ejercicio/" + str(ejercicio.id)
-        headers = {'Content-Type': self.header_content_type, "Authorization": "Bearer {}".format(self.token)}
+        headers = {'Content-Type': self.header_content_type, "Authorization": self.authentication_method.format(self.token)}
         
         resultado_consulta_ejercicio = self.client.get(endpoint_ejercicios,
                                                    headers=headers)
@@ -228,7 +228,7 @@ class TestEjercicio(TestCase):
         
         #Definir endpoint, encabezados y hacer el llamado
         endpoint_ejercicios = "/ejercicios"
-        headers = {'Content-Type': self.header_content_type, "Authorization": "Bearer {}".format(self.token)}
+        headers = {'Content-Type': self.header_content_type, "Authorization": self.authentication_method.format(self.token)}
         
         resultado_consulta_ejercicio = self.client.get(endpoint_ejercicios,
                                                    headers=headers)
