@@ -52,6 +52,7 @@ class TestPersona(TestCase):
         respuesta_login = json.loads(solicitud_login.get_data())
 
         self.token = respuesta_login["token"]
+        self.update_headers(self.token)
         self.usuario_id = respuesta_login["id"]
 
     def tearDown(self):
@@ -112,7 +113,6 @@ class TestPersona(TestCase):
 
         # Definir endpoint, encabezados y hacer el llamado
         endpoint_persona = "/personas/" + str(self.usuario_id)
-        self.update_headers(self.token)
         resultado_nueva_persona = self.client.post(endpoint_persona,
                                                      data=json.dumps(nueva_persona),
                                                      headers=self.headers)
@@ -172,7 +172,6 @@ class TestPersona(TestCase):
 
         # Definir endpoint, encabezados y hacer el llamado
         endpoint_persona = "/personas/" + str(self.usuario_id)
-        self.update_headers(self.token)
         resultado_nueva_persona = self.client.post(endpoint_persona,
                                                    data=json.dumps(nueva_persona),
                                                    headers=self.headers)
@@ -185,7 +184,6 @@ class TestPersona(TestCase):
 
         # Definir endpoint, encabezados y hacer el llamado de actualización
         endpoint_persona = "/persona/" + str(persona.id)
-        self.update_headers(self.token)
         resultado_datos_persona = self.client.get(endpoint_persona,
                                                     headers=self.headers)
 
@@ -240,7 +238,6 @@ class TestPersona(TestCase):
 
         # Definir endpoint, encabezados y hacer el llamado
         endpoint_persona = "/personas/" + str(self.usuario_id)
-        self.update_headers(self.token)
         resultado_nueva_persona = self.client.post(endpoint_persona,
                                                    data=json.dumps(nueva_persona),
                                                    headers=self.headers)
@@ -260,7 +257,6 @@ class TestPersona(TestCase):
         persona_editada['apellido'] = persona_editada['apellido'] + "_editado"
         persona_editada['usuario'] = nueva_persona["usuario"] + "_editado"
         persona_editada['contrasena'] = nueva_persona["contrasena"]
-        self.update_headers(self.token)
         resultado_persona_editada = self.client.put(endpoint_persona,
                                                    data=json.dumps(persona_editada),
                                                    headers=self.headers)
