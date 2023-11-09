@@ -23,6 +23,7 @@ class TestPersona(TestCase):
         self.client = app.test_client()
         self.content_type = 'application/json'
         self.authentication_method = "Bearer {}"
+        self.endpoint_personas = "/personas/"
 
         self.nombre_completo = self.data_factory.name()
         nombre_usuario = 'test_' + self.data_factory.name()
@@ -89,7 +90,6 @@ class TestPersona(TestCase):
         terminado = "1900-01-01"
 
         #Datos de usuario al crear una persona
-        nombre_usuario = 'test_' + self.data_factory.name()
         contrasena = 'T1$' + self.data_factory.word()
 
         # Crear el json con la persona a crear
@@ -112,7 +112,7 @@ class TestPersona(TestCase):
         }
 
         # Definir endpoint, encabezados y hacer el llamado
-        endpoint_persona = "/personas/" + str(self.usuario_id)
+        endpoint_persona = self.endpoint_personas + str(self.usuario_id)
         resultado_nueva_persona = self.client.post(endpoint_persona,
                                                      data=json.dumps(nueva_persona),
                                                      headers=self.headers)
@@ -171,7 +171,7 @@ class TestPersona(TestCase):
         }
 
         # Definir endpoint, encabezados y hacer el llamado
-        endpoint_persona = "/personas/" + str(self.usuario_id)
+        endpoint_persona = self.endpoint_personas + str(self.usuario_id)
         resultado_nueva_persona = self.client.post(endpoint_persona,
                                                    data=json.dumps(nueva_persona),
                                                    headers=self.headers)
@@ -237,7 +237,7 @@ class TestPersona(TestCase):
         }
 
         # Definir endpoint, encabezados y hacer el llamado
-        endpoint_persona = "/personas/" + str(self.usuario_id)
+        endpoint_persona = self.endpoint_personas + str(self.usuario_id)
         resultado_nueva_persona = self.client.post(endpoint_persona,
                                                    data=json.dumps(nueva_persona),
                                                    headers=self.headers)
