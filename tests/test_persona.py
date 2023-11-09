@@ -17,6 +17,8 @@ class TestPersona(TestCase):
         self.entrenadores_creados = []
         self.data_factory = Faker()
         self.client = app.test_client()
+        self.content_type = 'application/json'
+        self.authentication_method = "Bearer {}"
 
         self.nombre_completo = self.data_factory.name()
         nombre_usuario = 'test_' + self.data_factory.name()
@@ -41,7 +43,7 @@ class TestPersona(TestCase):
 
         solicitud_login = self.client.post("/login",
                                            data=json.dumps(usuario_login),
-                                           headers={'Content-Type': 'application/json'})
+                                           headers={'Content-Type': self.content_type})
 
         respuesta_login = json.loads(solicitud_login.get_data())
 
@@ -106,7 +108,7 @@ class TestPersona(TestCase):
 
         # Definir endpoint, encabezados y hacer el llamado
         endpoint_persona = "/personas/" + str(self.usuario_id)
-        headers = {'Content-Type': 'application/json', "Authorization": "Bearer {}".format(self.token)}
+        headers = {'Content-Type':  self.content_type, "Authorization": self.authentication_method.format(self.token)}
 
         resultado_nueva_persona = self.client.post(endpoint_persona,
                                                      data=json.dumps(nueva_persona),
@@ -144,7 +146,6 @@ class TestPersona(TestCase):
         terminado = "1900-01-01"
 
         # Datos de usuario al crear una persona
-        nombre_usuario = 'test_' + self.data_factory.name()
         contrasena = 'T1$' + self.data_factory.word()
 
         # Crear el json con la persona a crear
@@ -168,7 +169,7 @@ class TestPersona(TestCase):
 
         # Definir endpoint, encabezados y hacer el llamado
         endpoint_persona = "/personas/" + str(self.usuario_id)
-        headers = {'Content-Type': 'application/json', "Authorization": "Bearer {}".format(self.token)}
+        headers = {'Content-Type':  self.content_type, "Authorization": self.authentication_method.format(self.token)}
 
         resultado_nueva_persona = self.client.post(endpoint_persona,
                                                    data=json.dumps(nueva_persona),
@@ -182,7 +183,7 @@ class TestPersona(TestCase):
 
         # Definir endpoint, encabezados y hacer el llamado de actualización
         endpoint_persona = "/persona/" + str(persona.id)
-        headers = {'Content-Type': 'application/json', "Authorization": "Bearer {}".format(self.token)}
+        headers = {'Content-Type':  self.content_type, "Authorization": self.authentication_method.format(self.token)}
 
         resultado_datos_persona = self.client.get(endpoint_persona,
                                                     headers=headers)
@@ -215,7 +216,6 @@ class TestPersona(TestCase):
         terminado = "1900-01-01"
 
         # Datos de usuario al crear una persona
-        nombre_usuario = 'test_' + self.data_factory.name()
         contrasena = 'T1$' + self.data_factory.word()
 
         # Crear el json con la persona a crear
@@ -239,7 +239,7 @@ class TestPersona(TestCase):
 
         # Definir endpoint, encabezados y hacer el llamado
         endpoint_persona = "/personas/" + str(self.usuario_id)
-        headers = {'Content-Type': 'application/json', "Authorization": "Bearer {}".format(self.token)}
+        headers = {'Content-Type':  self.content_type, "Authorization": self.authentication_method.format(self.token)}
 
         resultado_nueva_persona = self.client.post(endpoint_persona,
                                                    data=json.dumps(nueva_persona),
@@ -255,7 +255,7 @@ class TestPersona(TestCase):
 
         # Definir endpoint, encabezados y hacer el llamado de actualización
         endpoint_persona = "/persona/" + str(persona.id)
-        headers = {'Content-Type': 'application/json', "Authorization": "Bearer {}".format(self.token)}
+        headers = {'Content-Type':  self.content_type, "Authorization": self.authentication_method.format(self.token)}
 
         persona_editada = datos_respuesta
         persona_editada['nombre'] = persona_editada['nombre'] + "_editado"
