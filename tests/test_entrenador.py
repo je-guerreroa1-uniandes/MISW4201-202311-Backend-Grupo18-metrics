@@ -1,9 +1,9 @@
 import json
 import hashlib
 from unittest import TestCase
-from unittest import skip
 
 from faker import Faker
+from passlib.hash import bcrypt
 
 from modelos import db, Usuario, Entrenador, Rol
 from app import app
@@ -137,7 +137,7 @@ def create_entrenador_helper(self):
     apellido_entrenador = 'test_' + self.data_factory.name().split()[1]
     usuario = nombre_entrenador + apellido_entrenador
     contrasena = 'T1$' + self.data_factory.word()
-    contrasena_encriptada = hashlib.md5(contrasena.encode('utf-8')).hexdigest()
+    contrasena_encriptada = bcrypt.hash(contrasena)
 
     # Create the user associated with the entrenador
     usuario_nuevo = Usuario(usuario=usuario, contrasena=contrasena_encriptada, rol=Rol.ADMINISTRADOR)
