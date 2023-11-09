@@ -19,6 +19,7 @@ class TestReporte(TestCase):
         self.usuarios_creados = []
         self.data_factory = Faker()
         self.client = app.test_client()
+        self.content_type = 'application/json'
 
         self.nombre_completo = self.data_factory.name()
         nombre_usuario = 'test_' + self.data_factory.name()
@@ -44,7 +45,7 @@ class TestReporte(TestCase):
         # Login como usuario para pruebas
         solicitud_login = self.client.post("/login",
                                            data=json.dumps(usuario_login),
-                                           headers={'Content-Type': 'application/json'})
+                                           headers={'Content-Type': self.content_type})
 
         respuesta_login = json.loads(solicitud_login.get_data())
 
@@ -90,7 +91,7 @@ class TestReporte(TestCase):
 
         # Definir endpoint, encabezados y hacer el llamado
         endpoint_persona = "/personas/" + str(self.usuario_id)
-        headers = {'Content-Type': 'application/json', "Authorization": "Bearer {}".format(self.token)}
+        headers = {'Content-Type': self.content_type, "Authorization": "Bearer {}".format(self.token)}
 
         resultado_nueva_persona = self.client.post(endpoint_persona,
                                                    data=json.dumps(nueva_persona),
@@ -173,7 +174,7 @@ class TestReporte(TestCase):
         total_calorias = utilidad.calcular_calorias(self.entrenamiento) + utilidad.calcular_calorias_rutina(self.entrenamiento_rutina)
         # Definir endpoint, encabezados y hacer el llamado
         endpoint_persona = "/persona/" + str(self.persona.id) + "/reporte"
-        headers = {'Content-Type': 'application/json', "Authorization": "Bearer {}".format(self.token)}
+        headers = {'Content-Type': self.content_type, "Authorization": "Bearer {}".format(self.token)}
 
         reporte_persona = self.client.get(endpoint_persona,
                                             headers=headers)

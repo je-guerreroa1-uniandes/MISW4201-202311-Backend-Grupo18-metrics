@@ -48,7 +48,7 @@ class TestEntrenadores(TestCase):
 
     def test_listar_entrenadores(self):
         # Generar 10 ejercicios con datos aleatorios
-        for i in range(0, 10):
+        for _ in range(0, 10):
             # Crear los datos del ejercicio
             nombre_entrenador = 'test_' + self.data_factory.name().split()[0]
             apellido_entrenador = 'test_' + self.data_factory.name().split()[1]
