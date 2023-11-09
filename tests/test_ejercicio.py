@@ -15,6 +15,8 @@ class TestEjercicio(TestCase):
         self.client = app.test_client()
         self.header_content_type = 'application/json'
         self.authentication_method = "Bearer {}"
+        self.ejercicios_endpoint = "/ejercicios"
+        self.ejercicio_endpoint = "/ejercicio/"
         
         nombre_usuario = 'test_' + self.data_factory.name()
         contrasena = 'T1$' + self.data_factory.word()
@@ -69,10 +71,9 @@ class TestEjercicio(TestCase):
         }
         
         #Definir endpoint, encabezados y hacer el llamado
-        endpoint_ejercicios = "/ejercicios"
         headers = {'Content-Type': self.header_content_type, "Authorization": self.authentication_method.format(self.token)}
         
-        resultado_nuevo_ejercicio = self.client.post(endpoint_ejercicios,
+        resultado_nuevo_ejercicio = self.client.post(self.ejercicios_endpoint,
                                                    data=json.dumps(nuevo_ejercicio),
                                                    headers=headers)
                                                    
@@ -122,7 +123,7 @@ class TestEjercicio(TestCase):
         }
         
         #Definir endpoint, encabezados y hacer el llamado
-        endpoint_ejercicios = "/ejercicio/" + str(ejercicio.id)
+        endpoint_ejercicios = self.ejercicio_endpoint + str(ejercicio.id)
         headers = {'Content-Type': self.header_content_type, "Authorization": self.authentication_method.format(self.token)}
         
         resultado_edicion_ejercicio = self.client.put(endpoint_ejercicios,
@@ -162,7 +163,7 @@ class TestEjercicio(TestCase):
         db.session.commit()
         
         #Definir endpoint, encabezados y hacer el llamado
-        endpoint_ejercicios = "/ejercicio/" + str(ejercicio.id)
+        endpoint_ejercicios = self.ejercicio_endpoint + str(ejercicio.id)
         headers = {'Content-Type': self.header_content_type, "Authorization": self.authentication_method.format(self.token)}
         resultado_borrado_ejercicio = self.client.delete(endpoint_ejercicios,
                                                    headers=headers)
@@ -191,7 +192,7 @@ class TestEjercicio(TestCase):
         self.ejercicios_creados.append(ejercicio)
         
         #Definir endpoint, encabezados y hacer el llamado
-        endpoint_ejercicios = "/ejercicio/" + str(ejercicio.id)
+        endpoint_ejercicios = self.ejercicio_endpoint + str(ejercicio.id)
         headers = {'Content-Type': self.header_content_type, "Authorization": self.authentication_method.format(self.token)}
         
         resultado_consulta_ejercicio = self.client.get(endpoint_ejercicios,
@@ -210,7 +211,7 @@ class TestEjercicio(TestCase):
 
     def test_listar_ejercicios(self):
         #Generar 10 ejercicios con datos aleatorios
-        for i in range(0,10):
+        for _ in range(0,10):
             #Crear los datos del ejercicio
             nombre_nuevo_ejercicio = self.data_factory.sentence()
             descripcion_nuevo_ejercicio = self.data_factory.sentence()
@@ -227,10 +228,9 @@ class TestEjercicio(TestCase):
             self.ejercicios_creados.append(ejercicio)
         
         #Definir endpoint, encabezados y hacer el llamado
-        endpoint_ejercicios = "/ejercicios"
         headers = {'Content-Type': self.header_content_type, "Authorization": self.authentication_method.format(self.token)}
         
-        resultado_consulta_ejercicio = self.client.get(endpoint_ejercicios,
+        resultado_consulta_ejercicio = self.client.get(self.ejercicios_endpoint,
                                                    headers=headers)
                                                    
         #Obtener los datos de respuesta y dejarlos un objeto json
