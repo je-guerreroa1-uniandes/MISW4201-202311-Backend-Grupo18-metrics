@@ -105,6 +105,14 @@ class TestReporte(TestCase):
         usuario_persona = Usuario.query.get(self.usuario_persona_id)
         self.usuarios_creados.append(usuario_persona)
 
+        # Create and commit a new Ejercicio instance to the test database
+        self.test_ejercicio = Ejercicio(nombre='Test Ejercicio', descripcion='Test Descripción', calorias=100)
+        db.session.add(self.test_ejercicio)
+        db.session.commit()
+
+        # Check that the ejercicio instance has an id
+        assert self.test_ejercicio.id is not None
+
         # Agregar entrenamiento a usuario\
         self.test_ejercicio = Ejercicio.query.first()
         self.entrenamiento = Entrenamiento(
@@ -114,6 +122,14 @@ class TestReporte(TestCase):
             ejercicio=int(self.test_ejercicio.id),
             persona=self.persona.id
         )
+
+        # Create and commit a new Rutina instance to the test database
+        self.test_rutina = Rutina(nombre='Test Rutina', descripcion='Test Descripción')
+        db.session.add(self.test_rutina)
+        db.session.commit()
+
+        # Check that the Rutina instance has an id
+        assert self.test_rutina.id is not None
 
         db.session.add(self.entrenamiento)
         db.session.commit()

@@ -25,28 +25,28 @@ class VistaRutina(Resource):
 class VistaRutinas(Resource):
     @jwt_required()
     def put(self):
-        editRutina = Rutina.query.get_or_404(request.json["id"])      
+        edit_rutina = Rutina.query.get_or_404(request.json["id"])
 
-        ejerciciosRq = request.json["ejercicios"] 
+        ejercicios_rq = request.json["ejercicios"]
         editEjercicios = [];  
         
-        for ejercicio in ejerciciosRq:
+        for ejercicio in ejercicios_rq:
             element =  Ejercicio.query.get_or_404(ejercicio['id'])
             editEjercicios.append(element)
 
         print(editEjercicios)
 
-        editRutina.nombre = request.json["nombre"]
-        editRutina.descripcion = request.json["descripcion"]
-        editRutina.ejercicios = editEjercicios
+        edit_rutina.nombre = request.json["nombre"]
+        edit_rutina.descripcion = request.json["descripcion"]
+        edit_rutina.ejercicios = editEjercicios
 
-        db.session.add(editRutina)
+        db.session.add(edit_rutina)
         db.session.commit()
-        return rutina_schema.dump(editRutina)
+        return rutina_schema.dump(edit_rutina)
 
     @jwt_required()
     def post(self):
-        nuevaRutina = Rutina( \
+        nueva_rutina = Rutina( \
             nombre=request.json["nombre"], \
             descripcion=request.json["descripcion"], \
         )
@@ -55,12 +55,12 @@ class VistaRutinas(Resource):
 
         for ejercicio in ejercicios:
             element =  Ejercicio.query.get_or_404(ejercicio['id'])
-            nuevaRutina.ejercicios.append(element)
+            nueva_rutina.ejercicios.append(element)
 
 
-        db.session.add(nuevaRutina)
+        db.session.add(nueva_rutina)
         db.session.commit()
-        return rutina_schema.dump(nuevaRutina)
+        return rutina_schema.dump(nueva_rutina)
 
     @jwt_required()
     def get(self):

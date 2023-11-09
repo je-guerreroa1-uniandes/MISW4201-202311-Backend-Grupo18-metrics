@@ -28,10 +28,10 @@ class VistaEntrenamientos(Resource):
 
     @jwt_required()
     def post(self, id_persona):
-        type =  request.json["type"]
+        requested_type =  request.json["type"]
 
         # Entrenamiento ejercicio
-        if type == '1' :
+        if requested_type == '1' :
             print(datetime.strptime(request.json["fecha"], '%Y-%m-%d'))
             nuevo_entrenamiento = Entrenamiento(
                 tiempo=datetime.strptime(request.json["tiempo"], '%H:%M:%S').time(),

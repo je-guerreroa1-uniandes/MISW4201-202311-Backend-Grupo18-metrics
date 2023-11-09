@@ -1,9 +1,9 @@
 import json
 import hashlib
 from unittest import TestCase
-from unittest import skip
 
 from faker import Faker
+from passlib.hash import bcrypt
 
 from modelos import db, Usuario, Entrenador, Rol
 from app import app
@@ -14,7 +14,7 @@ class TestEntrenador(TestCase):
     def setUp (self):
         self.data_factory = Faker()
         self.client = app.test_client()
-
+        self.content_type = 'application/json'
         self.nombre_completo = self.data_factory.name()
         nombre_usuario = 'test_' + self.data_factory.name()
         contrasena = 'T1$' + self.data_factory.word()
@@ -32,7 +32,7 @@ class TestEntrenador(TestCase):
 
         solicitud_login = self.client.post("/login",
                                            data=json.dumps(usuario_login),
-                                           headers={'Content-Type': 'application/json'})
+                                           headers={'Content-Type': self.content_type})
 
         respuesta_login = json.loads(solicitud_login.get_data())
 
@@ -70,7 +70,7 @@ class TestEntrenador(TestCase):
 
         # Definir endpoint, encabezados y hacer el llamado
         endpoint_entrenadores = "/entrenador"
-        headers = {'Content-Type': 'application/json', "Authorization": "Bearer {}".format(self.token)}
+        headers = {'Content-Type': self.content_type, "Authorization": "Bearer {}".format(self.token)}
 
         resultado_nuevo_entrenador = self.client.post(endpoint_entrenadores,
                                                      data=json.dumps(nuevo_entrenador),
@@ -90,3 +90,63 @@ class TestEntrenador(TestCase):
         self.assertEqual(datos_respuesta['apellido'], entrenador.apellido)
         self.assertEqual(datos_respuesta['usuario'], nuevo_usuario.id)
         self.assertIsNotNone(datos_respuesta['id'])
+
+
+def test_actualizar_entrenador(self):
+    # First, create an entrenador that we will update
+    entrenador = self.create_entrenador_helper()
+
+    # Now, define the update data
+    updated_data = {
+        "nombre": 'Updated_' + entrenador.nombre,
+        "apellido": 'Updated_' + entrenador.apellido,
+        # Add any other fields you want to update
+    }
+
+    # Define the endpoint and headers for the update
+    endpoint = f"/entrenador/{entrenador.id}"
+    headers = {
+        'Content-Type': self.content_type,
+        "Authorization": f"Bearer {self.token}"
+    }
+
+    # Send the PUT request to update the entrenador
+    response = self.client.put(endpoint, data=json.dumps(updated_data), headers=headers)
+
+    # Check that the update was successful
+    self.assertEqual(response.status_code, 200)
+
+    # Fetch the updated entrenador from the database
+    updated_entrenador = Entrenador.query.get(entrenador.id)
+
+    # Verify the entrenador's fields were updated
+    self.assertEqual(updated_entrenador.nombre, updated_data['nombre'])
+    self.assertEqual(updated_entrenador.apellido, updated_data['apellido'])
+
+    # Optionally check if 'updated_at' field has been changed
+    # This assumes your model has an 'updated_at' field that is set to the current time on update
+    # self.assertNotEqual(updated_entrenador.updated_at, entrenador.updated_at)
+
+    # Clean up by deleting the updated entrenador
+    self.entrenadores_creados.append(updated_entrenador)
+
+
+# Helper method to create an entrenador
+def create_entrenador_helper(self):
+    nombre_entrenador = 'test_' + self.data_factory.name().split()[0]
+    apellido_entrenador = 'test_' + self.data_factory.name().split()[1]
+    usuario = nombre_entrenador + apellido_entrenador
+    contrasena = 'T1$' + self.data_factory.word()
+    contrasena_encriptada = bcrypt.hash(contrasena)
+
+    # Create the user associated with the entrenador
+    usuario_nuevo = Usuario(usuario=usuario, contrasena=contrasena_encriptada, rol=Rol.ADMINISTRADOR)
+    db.session.add(usuario_nuevo)
+    db.session.commit()
+
+    # Now create the entrenador
+    nuevo_entrenador = Entrenador(nombre=nombre_entrenador, apellido=apellido_entrenador, usuario_id=usuario_nuevo.id)
+    db.session.add(nuevo_entrenador)
+    db.session.commit()
+
+    return nuevo_entrenador
