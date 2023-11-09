@@ -11,6 +11,10 @@ from app import app
 
 class TestPersona(TestCase):
 
+    def update_headers (self, token):
+        self.headers = {'Content-Type': self.content_type,
+                        "Authorization": self.authentication_method.format(token)}
+        return self.headers
     def setUp(self):
         self.personas_creadas = []
         self.usuarios_creados = []
@@ -108,11 +112,10 @@ class TestPersona(TestCase):
 
         # Definir endpoint, encabezados y hacer el llamado
         endpoint_persona = "/personas/" + str(self.usuario_id)
-        headers = {'Content-Type':  self.content_type, "Authorization": self.authentication_method.format(self.token)}
-
+        self.update_headers(self.token)
         resultado_nueva_persona = self.client.post(endpoint_persona,
                                                      data=json.dumps(nueva_persona),
-                                                     headers=headers)
+                                                     headers=self.headers)
 
         # Obtener los datos de respuesta y dejarlos un objeto json y en el objeto a comparar
         datos_respuesta = json.loads(resultado_nueva_persona.get_data())
@@ -169,11 +172,10 @@ class TestPersona(TestCase):
 
         # Definir endpoint, encabezados y hacer el llamado
         endpoint_persona = "/personas/" + str(self.usuario_id)
-        headers = {'Content-Type':  self.content_type, "Authorization": self.authentication_method.format(self.token)}
-
+        self.update_headers(self.token)
         resultado_nueva_persona = self.client.post(endpoint_persona,
                                                    data=json.dumps(nueva_persona),
-                                                   headers=headers)
+                                                   headers=self.headers)
         datos_respuesta = json.loads(resultado_nueva_persona.get_data())
         persona = Persona.query.get(datos_respuesta['id'])
         self.personas_creadas.append(persona)
@@ -183,10 +185,9 @@ class TestPersona(TestCase):
 
         # Definir endpoint, encabezados y hacer el llamado de actualización
         endpoint_persona = "/persona/" + str(persona.id)
-        headers = {'Content-Type':  self.content_type, "Authorization": self.authentication_method.format(self.token)}
-
+        self.update_headers(self.token)
         resultado_datos_persona = self.client.get(endpoint_persona,
-                                                    headers=headers)
+                                                    headers=self.headers)
 
         # Obtener los datos de respuesta y dejarlos un objeto json
         datos_respuesta = json.loads(resultado_datos_persona.get_data())
@@ -239,11 +240,10 @@ class TestPersona(TestCase):
 
         # Definir endpoint, encabezados y hacer el llamado
         endpoint_persona = "/personas/" + str(self.usuario_id)
-        headers = {'Content-Type':  self.content_type, "Authorization": self.authentication_method.format(self.token)}
-
+        self.update_headers(self.token)
         resultado_nueva_persona = self.client.post(endpoint_persona,
                                                    data=json.dumps(nueva_persona),
-                                                   headers=headers)
+                                                   headers=self.headers)
 
         # Obtener los datos de respuesta y dejarlos un objeto json y en el objeto a comparar
         datos_respuesta = json.loads(resultado_nueva_persona.get_data())
@@ -255,16 +255,15 @@ class TestPersona(TestCase):
 
         # Definir endpoint, encabezados y hacer el llamado de actualización
         endpoint_persona = "/persona/" + str(persona.id)
-        headers = {'Content-Type':  self.content_type, "Authorization": self.authentication_method.format(self.token)}
-
         persona_editada = datos_respuesta
         persona_editada['nombre'] = persona_editada['nombre'] + "_editado"
         persona_editada['apellido'] = persona_editada['apellido'] + "_editado"
         persona_editada['usuario'] = nueva_persona["usuario"] + "_editado"
         persona_editada['contrasena'] = nueva_persona["contrasena"]
+        self.update_headers(self.token)
         resultado_persona_editada = self.client.put(endpoint_persona,
                                                    data=json.dumps(persona_editada),
-                                                   headers=headers)
+                                                   headers=self.headers)
         datos_respuesta_editada = json.loads(resultado_persona_editada.get_data())
 
         # Verificar que el llamado fue exitoso y que el objeto recibido tiene los datos iguales a los creados
